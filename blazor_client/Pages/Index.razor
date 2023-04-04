@@ -1,0 +1,69 @@
+﻿@page "/"
+
+@inject HttpClient Http
+@using System.Text.Json.Nodes
+@using System.Net.Http.Headers
+@using System.Net
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="accordion">
+    <div class="accordion-item">
+        <h4 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Digitally sign PDF
+            </button>
+        </h4>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+
+                <div class="d-flex flex-column" align="center">
+                    <h3>Digitally sign PDF document</h3>
+                    Digitally sign the PDF document using Azure key vault
+                    <div style="padding:20px">
+                        <button type="button" class="btn btn-primary" id="ButtonShow" @onclick="SignPDF"> Sign PDF </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private async Task SignPDF()
+    {        //Create http client to send both files and json data
+        using (var client = new HttpClient())
+        {
+            //Create multipart form data content
+            using (var content = new MultipartFormDataContent())
+            {
+                var document = await Http.GetByteArrayAsync("PDF_Succinctly.pdf");
+                content.Add(CreateContent("document", "input.pdf", document));
+                
+                //Calling web API to sign the PDF document
+                var response = await client.PostAsync("https://localhost:7171/api/signPDF", content);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {   
+                    //Downloading the PDF document
+                    var responseContent = await response.Content.ReadAsStreamAsync();
+                    using var Content = new DotNetStreamReference(stream: responseContent);
+                    await JS.InvokeVoidAsync("SubmitHTML", "digital signature.pdf", Content);
+                }
+
+            }
+        }
+
+    }
+
+    private ByteArrayContent CreateContent(string name, string fileName, byte[] fileBytes)
+    {
+        var fileContent = new ByteArrayContent(fileBytes);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = name,
+                FileName = fileName
+            };
+        return fileContent;
+    }
+}
