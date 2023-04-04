@@ -7,7 +7,7 @@ Sample name | Description
 [Digital signature Blazor client application](https://github.com/SyncfusionExamples/sign-pdf-using-azure-key-vault/tree/master/blazor_client) | A Blazor WebAssembly (WASM) application using .NET 7.0 can be utilized to make a request to a server-side Web API application. 
 [Digital signature Web API](https://github.com/SyncfusionExamples/sign-pdf-using-azure-key-vault/tree/master/digital_signature_web_API) | Web API service to sign the PDF document.  
 
-## Azure key vault 
+#### Azure key vault 
 Azure Key Vault is a cloud-based key management service that allows you to create, store, and manage cryptographic keys and certificates. Syncfusion PDF Library is a .NET library enabling you to programmatically create and manipulate PDF documents. By combining these two powerful tools, we can create a robust and secure PDF digital signature service. 
 
 ### 1. Steps to create Azure key vault and certificate 
